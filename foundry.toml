@@ -1,14 +1,15 @@
 [profile.default]
 src = 'src'
 out = 'out'
-libs = ['lib']
+libs = ['lib', 'lib/protocol-v3/src/misc/libraries']
 
 solc_version = "0.8.28"
 evm_version = "cancun"
-
 optimizer = true
 optimizer_runs = 10_000
 verbosity = 3
+
+auto_detect_remappings = false
 
 [profile.default.fuzz]
 runs = 1000
