@@ -16,7 +16,7 @@ import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegatio
 ///         an account has to self-delegate to vote depends on the voting contract implementation.
 /// @author Modified from https://github.com/morpho-org/morpho-token-upgradeable
 contract DelegationToken is ERC20, IDelegationToken {
-    bytes32 internal constant DELEGATION_TYPEHASH =
+    bytes32 public constant DELEGATION_TYPEHASH =
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     /// @inheritdoc IDelegationToken

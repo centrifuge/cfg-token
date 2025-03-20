@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {CFG} from "src/CFG.sol";
+import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
 import {IAuth} from "centrifuge/protocol-v3/src/misc/interfaces/IAuth.sol";
 import "forge-std/Test.sol";
 
@@ -80,7 +81,7 @@ contract CFGTest is Test {
 
         assertEq(token.delegatee(address(this)), address(0));
         assertEq(token.delegatee(user2), address(0));
-        assertEq(token.delegatedVotingPower(address(this)), 0);
+        assertEq(token.delegatedVotingPower(delegatee), 0);
         assertEq(token.delegatedVotingPower(delegatee2), 0);
 
         token.delegate(delegatee);
@@ -112,5 +113,59 @@ contract CFGTest is Test {
         assertEq(token.delegatee(user2), delegatee2);
         assertEq(token.delegatedVotingPower(delegatee), mintAmount - transferAmount - transferFromAmount - burnAmount);
         assertEq(token.delegatedVotingPower(delegatee2), transferAmount + transferFromAmount);
+    }
+
+    function testDelegateWithSig(address delegatee) public {
+        uint256 privateKey = 0xBEEF;
+        address owner = vm.addr(privateKey);
+        vm.assume(delegatee != owner && delegatee != address(0));
+
+        CFG token = new CFG();
+
+        uint256 nonce = token.delegationNonce(owner);
+        Delegation memory delegation = Delegation(delegatee, nonce, block.timestamp);
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
+                )
+            )
+        );
+
+        assertEq(token.delegatee(owner), address(0));
+        token.delegateWithSig(delegation, Signature(v, r, s));
+        assertEq(token.delegatee(owner), delegatee);
+
+        // Cannot re-use nonce
+        delegation = Delegation(delegatee, nonce, block.timestamp);
+
+        (v, r, s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
+                )
+            )
+        );
+
+        vm.expectRevert(IDelegationToken.InvalidDelegationNonce.selector);
+        token.delegateWithSig(delegation, Signature(v, r, s));
+
+        // Cannot use expired permits
+        delegation = Delegation(delegatee, token.delegationNonce(owner), block.timestamp - 1);
+
+        (v, r, s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x01", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
+                )
+            )
+        );
+
+        vm.expectRevert(IDelegationToken.DelegatesExpiredSignature.selector);
+        token.delegateWithSig(delegation, Signature(v, r, s));
     }
 }
