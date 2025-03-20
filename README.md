@@ -28,4 +28,4 @@ TODO
 
 The codebase is licensed under `GPL-2.0-or-later`, see [`LICENSE`](./LICENSE).
 
-The onchain delegation logic is adapted from the [https://github.com/morpho-org/morpho-token](Morpho token).
+The onchain delegation logic is adapted from the [Morpho token](https://github.com/morpho-org/morpho-token).
