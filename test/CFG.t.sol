@@ -3,13 +3,13 @@ pragma solidity 0.8.28;
 
 import {CFG} from "src/CFG.sol";
 import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
-import {IAuth} from "centrifuge/protocol-v3/src/misc/interfaces/IAuth.sol";
+import {IAuth} from "protocol-v3/misc/interfaces/IAuth.sol";
 import "forge-std/Test.sol";
 
 contract CFGTest is Test {
-    function testDeployment() public {
-        CFG token = new CFG();
+    CFG token = new CFG(address(this));
 
+    function testDeployment() public view {
         assertEq(token.name(), "Centrifuge");
         assertEq(token.symbol(), "CFG");
         assertEq(token.decimals(), 18);
@@ -17,9 +17,7 @@ contract CFGTest is Test {
 
     function testMint(address nonWard, address destination, uint256 mintAmount) public {
         vm.assume(nonWard != address(this));
-        vm.assume(destination != address(this) && destination != address(0));
-
-        CFG token = new CFG();
+        vm.assume(destination != address(this) && destination.code.length == 0 && destination != address(0));
 
         assertEq(token.wards(address(this)), 1);
         assertEq(token.wards(nonWard), 0);
@@ -39,8 +37,6 @@ contract CFGTest is Test {
     function testBurn(address nonWard, uint256 mintAmount, uint256 burnAmount) public {
         vm.assume(nonWard != address(this));
         burnAmount = bound(burnAmount, 0, mintAmount);
-
-        CFG token = new CFG();
 
         assertEq(token.wards(address(this)), 1);
         assertEq(token.wards(nonWard), 0);
@@ -66,15 +62,13 @@ contract CFGTest is Test {
         address delegatee2
     ) public {
         vm.assume(delegatee != address(this) && delegatee != address(0));
-        vm.assume(user2 != delegatee && user2 != address(this) && user2 != address(0));
+        vm.assume(user2 != delegatee && user2.code.length == 0 && user2 != address(this) && user2 != address(0));
         vm.assume(
             delegatee2 != delegatee && delegatee2 != user2 && delegatee2 != address(this) && delegatee2 != address(0)
         );
         transferAmount = bound(transferAmount, 0, mintAmount);
         transferFromAmount = bound(transferFromAmount, 0, mintAmount - transferAmount);
         burnAmount = bound(burnAmount, 0, mintAmount - transferAmount - transferFromAmount);
-
-        CFG token = new CFG();
 
         token.mint(address(this), mintAmount);
         assertEq(token.balanceOf(address(this)), mintAmount);
@@ -119,8 +113,6 @@ contract CFGTest is Test {
         uint256 privateKey = 0xBEEF;
         address owner = vm.addr(privateKey);
         vm.assume(delegatee != owner && delegatee != address(0));
-
-        CFG token = new CFG();
 
         uint256 nonce = token.delegationNonce(owner);
         Delegation memory delegation = Delegation(delegatee, nonce, block.timestamp);

@@ -5,8 +5,9 @@ import {DelegationToken} from "src/DelegationToken.sol";
 
 /// @title  Centrifuge Token
 contract CFG is DelegationToken {
-    constructor() DelegationToken(18) {
+    constructor(address ward) DelegationToken(18) {
         file("name", "Centrifuge");
         file("symbol", "CFG");
+        rely(ward);
     }
 }
