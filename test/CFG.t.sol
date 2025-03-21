@@ -34,7 +34,7 @@ contract CFGTest is Test {
         assertEq(token.balanceOf(destination), mintAmount);
     }
 
-    function testBurn(address nonWard, uint256 mintAmount, uint256 burnAmount) public {
+    function testBurnAuth(address nonWard, uint256 mintAmount, uint256 burnAmount) public {
         vm.assume(nonWard != address(this));
         burnAmount = bound(burnAmount, 0, mintAmount);
 
@@ -50,6 +50,21 @@ contract CFGTest is Test {
 
         token.burn(address(this), burnAmount);
         assertEq(token.balanceOf(address(this)), mintAmount - burnAmount);
+    }
+
+    function testBurnSelf(address user, uint256 mintAmount, uint256 burnAmount) public {
+        vm.assume(user != address(this) && user != address(0));
+        burnAmount = bound(burnAmount, 0, mintAmount);
+
+        assertEq(token.wards(user), 0);
+
+        token.mint(user, mintAmount);
+        assertEq(token.balanceOf(user), mintAmount);
+
+        vm.prank(user);
+        token.burn(burnAmount);
+
+        assertEq(token.balanceOf(user), mintAmount - burnAmount);
     }
 
     function testDelegateVotingPower(

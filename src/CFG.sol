@@ -10,4 +10,18 @@ contract CFG is DelegationToken {
         file("symbol", "CFG");
         rely(ward);
     }
+
+    /// @notice Burns sender's tokens.
+    function burn(uint256 value) external {
+        uint256 balance = balanceOf(msg.sender);
+        require(balance >= value, InsufficientBalance());
+
+        unchecked {
+            // We don't need overflow checks b/c require(balance >= value) and balance <= totalSupply
+            _setBalance(msg.sender, _balanceOf(msg.sender) - value);
+            totalSupply = totalSupply - value;
+        }
+
+        emit Transfer(msg.sender, address(0), value);
+    }
 }
