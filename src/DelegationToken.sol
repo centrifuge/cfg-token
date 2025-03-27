@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity 0.8.28;
 
-import {ERC20} from "protocol-v3/misc/ERC20.sol";
+import {ERC20} from "src/misc/ERC20.sol";
 import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
 
 /// @title  Delegation Token

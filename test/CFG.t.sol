@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 import {CFG} from "src/CFG.sol";
 import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
-import {IAuth} from "protocol-v3/misc/interfaces/IAuth.sol";
+import {IAuth} from "src/misc/interfaces/IAuth.sol";
 import "forge-std/Test.sol";
 
 contract CFGTest is Test {
