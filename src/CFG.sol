@@ -22,6 +22,7 @@ contract CFG is DelegationToken {
             totalSupply = totalSupply - value;
         }
 
+        _moveDelegateVotes(delegatee[msg.sender], address(0), value);
         emit Transfer(msg.sender, address(0), value);
     }
 }

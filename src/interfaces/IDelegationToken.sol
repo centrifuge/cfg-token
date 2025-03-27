@@ -26,6 +26,9 @@ interface IDelegationToken {
     /// @notice The delegation nonce used by the signer is not its current delegation nonce.
     error InvalidDelegationNonce();
 
+    /// @notice The signature was invalid.
+    error InvalidSignature();
+
     /// @notice Returns the delegatee that `account` has chosen.
     function delegatee(address account) external view returns (address);
 
