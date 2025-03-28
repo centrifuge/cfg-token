@@ -2,9 +2,10 @@
 pragma solidity 0.8.28;
 
 import {DelegationToken} from "src/DelegationToken.sol";
+import {ICFG} from "src/interfaces/ICFG.sol";
 
 /// @title  Centrifuge Token
-contract CFG is DelegationToken {
+contract CFG is DelegationToken, ICFG {
     constructor(address ward) DelegationToken(18) {
         file("name", "Centrifuge");
         file("symbol", "CFG");
