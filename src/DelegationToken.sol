@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {ERC20} from "protocol-v3/misc/ERC20.sol";
+import {IERC20} from "protocol-v3/misc/interfaces/IERC20.sol";
 import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
 
 /// @title  Delegation Token
@@ -58,13 +59,17 @@ contract DelegationToken is ERC20, IDelegationToken {
     }
 
     /// @dev Moves voting power when tokens are transferred.
-    function transfer(address to, uint256 value) public override(ERC20) returns (bool success) {
+    function transfer(address to, uint256 value) public override(ERC20, IERC20) returns (bool success) {
         success = super.transfer(to, value);
         _moveDelegateVotes(delegatee[msg.sender], delegatee[to], value);
     }
 
     /// @dev Moves voting power when tokens are transferred.
-    function transferFrom(address from, address to, uint256 value) public override(ERC20) returns (bool success) {
+    function transferFrom(address from, address to, uint256 value)
+        public
+        override(ERC20, IERC20)
+        returns (bool success)
+    {
         success = super.transferFrom(from, to, value);
         _moveDelegateVotes(delegatee[from], delegatee[to], value);
     }

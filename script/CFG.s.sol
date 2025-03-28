@@ -25,7 +25,7 @@ contract CFGScript is Script, CreateXScript {
 
         // Setup
         cfg.mint(mintDestination, initialMint);
-        // cfg.deny(address(this)); // TODO
+        cfg.deny(address(this));
 
         vm.stopBroadcast();
     }

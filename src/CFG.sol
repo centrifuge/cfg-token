@@ -18,8 +18,8 @@ contract CFG is DelegationToken {
 
         unchecked {
             // We don't need overflow checks b/c require(balance >= value) and balance <= totalSupply
-            _setBalance(msg.sender, _balanceOf(msg.sender) - value);
-            totalSupply = totalSupply - value;
+            _setBalance(msg.sender, balance - value);
+            totalSupply -= value;
         }
 
         _moveDelegateVotes(delegatee[msg.sender], address(0), value);
