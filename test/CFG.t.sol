@@ -188,16 +188,16 @@ contract CFGTest is Test {
         // Cannot use invalid signature
         delegation = Delegation(delegatee, token.delegationNonce(owner), block.timestamp);
 
-        (v, s, r) = vm.sign(
+        (v, r, s) = vm.sign(
             privateKey,
             keccak256(
                 abi.encodePacked(
-                    "\x19\x01", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
+                    "\x19\x02", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
                 )
             )
         );
 
         vm.expectRevert(IDelegationToken.InvalidSignature.selector);
-        token.delegateWithSig(delegation, Signature(v, r, s));
+        token.delegateWithSig(delegation, Signature(v, bytes32(""), bytes32("")));
     }
 }
