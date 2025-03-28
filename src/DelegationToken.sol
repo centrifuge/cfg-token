@@ -35,9 +35,7 @@ contract DelegationToken is ERC20, IDelegationToken {
         _delegate(delegator, newDelegatee);
     }
 
-    event Log(address delegator);
     /// @inheritdoc IDelegationToken
-
     function delegateWithSig(Delegation calldata delegation, Signature calldata signature) external {
         require(block.timestamp <= delegation.expiry, DelegatesExpiredSignature());
 
@@ -45,8 +43,6 @@ contract DelegationToken is ERC20, IDelegationToken {
             abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), keccak256(abi.encode(DELEGATION_TYPEHASH, delegation)))
         );
         address delegator = ecrecover(digest, signature.v, signature.r, signature.s);
-        emit Log(delegator);
-        emit Log(msg.sender);
         require(delegator != address(0), InvalidSignature());
         require(delegation.nonce == delegationNonce[delegator]++, InvalidDelegationNonce());
 
