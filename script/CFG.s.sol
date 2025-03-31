@@ -19,9 +19,9 @@ contract CFGScript is Script, CreateXScript {
         address initialOwner = 0x0C1fDfd6a1331a875EA013F3897fc8a76ada5DfC;
 
         // Deployment
-        bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada400b1c499ec4040ff037c0ea5;
+        bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada400a9053bef30e0a10398b302;
         CFG cfg = CFG(create3(salt, abi.encodePacked(type(CFG).creationCode, abi.encode(msg.sender))));
-        require(address(cfg) == 0xCCCCccCCCCce608916f3eeB1D09E1D8B8246DC4A);
+        require(address(cfg) == 0xCCCCcCCCcc111a3d376dACAd7DA330fE751cd9EA);
 
         // Setup
         cfg.mint(mintDestination, initialMint);
