@@ -53,7 +53,7 @@ contract CFGTest is Test {
     }
 
     function testBurnSelf(address user, uint256 mintAmount, uint256 burnAmount) public {
-        vm.assume(user != address(this) && user != address(0));
+        vm.assume(user != address(this) && user != address(0) && user != address(token));
         burnAmount = bound(burnAmount, 0, mintAmount);
 
         assertEq(token.wards(user), 0);
@@ -72,6 +72,7 @@ contract CFGTest is Test {
         uint256 transferAmount,
         uint256 transferFromAmount,
         uint256 burnAmount,
+        uint256 burnPermissionlessAmount,
         address delegatee,
         address user2,
         address delegatee2
@@ -84,6 +85,7 @@ contract CFGTest is Test {
         transferAmount = bound(transferAmount, 0, mintAmount);
         transferFromAmount = bound(transferFromAmount, 0, mintAmount - transferAmount);
         burnAmount = bound(burnAmount, 0, mintAmount - transferAmount - transferFromAmount);
+        burnPermissionlessAmount = bound(burnPermissionlessAmount, 0, transferAmount + transferFromAmount);
 
         token.mint(address(this), mintAmount);
         assertEq(token.balanceOf(address(this)), mintAmount);
@@ -122,6 +124,14 @@ contract CFGTest is Test {
         assertEq(token.delegatee(user2), delegatee2);
         assertEq(token.delegatedVotingPower(delegatee), mintAmount - transferAmount - transferFromAmount - burnAmount);
         assertEq(token.delegatedVotingPower(delegatee2), transferAmount + transferFromAmount);
+
+        vm.prank(user2);
+        token.burn(burnPermissionlessAmount);
+
+        assertEq(token.delegatee(address(this)), delegatee);
+        assertEq(token.delegatee(user2), delegatee2);
+        assertEq(token.delegatedVotingPower(delegatee), mintAmount - transferAmount - transferFromAmount - burnAmount);
+        assertEq(token.delegatedVotingPower(delegatee2), transferAmount + transferFromAmount - burnPermissionlessAmount);
     }
 
     function testDelegateWithSig(address delegatee) public {
@@ -174,5 +184,20 @@ contract CFGTest is Test {
 
         vm.expectRevert(IDelegationToken.DelegatesExpiredSignature.selector);
         token.delegateWithSig(delegation, Signature(v, r, s));
+
+        // Cannot use invalid signature
+        delegation = Delegation(delegatee, token.delegationNonce(owner), block.timestamp);
+
+        (v, r, s) = vm.sign(
+            privateKey,
+            keccak256(
+                abi.encodePacked(
+                    "\x19\x02", token.DOMAIN_SEPARATOR(), keccak256(abi.encode(token.DELEGATION_TYPEHASH(), delegation))
+                )
+            )
+        );
+
+        vm.expectRevert(IDelegationToken.InvalidSignature.selector);
+        token.delegateWithSig(delegation, Signature(v, bytes32(""), bytes32("")));
     }
 }

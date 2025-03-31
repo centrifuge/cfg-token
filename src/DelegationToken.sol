@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {ERC20} from "protocol-v3/misc/ERC20.sol";
+import {IERC20} from "protocol-v3/misc/interfaces/IERC20.sol";
 import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegationToken.sol";
 
 /// @title  Delegation Token
@@ -14,7 +15,7 @@ import {IDelegationToken, Delegation, Signature} from "src/interfaces/IDelegatio
 ///
 ///         By default, token balance does not account for voting power. This makes transfers cheaper. Whether
 ///         an account has to self-delegate to vote depends on the voting contract implementation.
-/// @author Modified from https://github.com/morpho-org/morpho-token-upgradeable
+/// @author Modified from https://github.com/morpho-org/morpho-token
 contract DelegationToken is ERC20, IDelegationToken {
     bytes32 public constant DELEGATION_TYPEHASH =
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
@@ -42,6 +43,7 @@ contract DelegationToken is ERC20, IDelegationToken {
             abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), keccak256(abi.encode(DELEGATION_TYPEHASH, delegation)))
         );
         address delegator = ecrecover(digest, signature.v, signature.r, signature.s);
+        require(delegator != address(0), InvalidSignature());
         require(delegation.nonce == delegationNonce[delegator]++, InvalidDelegationNonce());
 
         _delegate(delegator, delegation.delegatee);
@@ -57,13 +59,17 @@ contract DelegationToken is ERC20, IDelegationToken {
     }
 
     /// @dev Moves voting power when tokens are transferred.
-    function transfer(address to, uint256 value) public override(ERC20) returns (bool success) {
+    function transfer(address to, uint256 value) public override(ERC20, IERC20) returns (bool success) {
         success = super.transfer(to, value);
         _moveDelegateVotes(delegatee[msg.sender], delegatee[to], value);
     }
 
     /// @dev Moves voting power when tokens are transferred.
-    function transferFrom(address from, address to, uint256 value) public override(ERC20) returns (bool success) {
+    function transferFrom(address from, address to, uint256 value)
+        public
+        override(ERC20, IERC20)
+        returns (bool success)
+    {
         success = super.transferFrom(from, to, value);
         _moveDelegateVotes(delegatee[from], delegatee[to], value);
     }

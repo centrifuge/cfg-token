@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity 0.8.28;
 
+import {IERC20Metadata, IERC20Permit} from "protocol-v3/misc/interfaces/IERC20.sol";
+
 struct Delegation {
     address delegatee;
     uint256 nonce;
@@ -13,7 +15,7 @@ struct Signature {
     bytes32 s;
 }
 
-interface IDelegationToken {
+interface IDelegationToken is IERC20Metadata, IERC20Permit {
     /// @notice Emitted when an delegator changes their delegatee.
     event DelegateeChanged(address indexed delegator, address indexed oldDelegatee, address indexed newDelegatee);
 
@@ -25,6 +27,9 @@ interface IDelegationToken {
 
     /// @notice The delegation nonce used by the signer is not its current delegation nonce.
     error InvalidDelegationNonce();
+
+    /// @notice The signature was invalid.
+    error InvalidSignature();
 
     /// @notice Returns the delegatee that `account` has chosen.
     function delegatee(address account) external view returns (address);
