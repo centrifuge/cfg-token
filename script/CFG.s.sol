@@ -14,14 +14,14 @@ contract CFGScript is Script, CreateXScript {
         vm.startBroadcast();
 
         // Parameters
-        uint256 initialMint = 100; // TODO
-        address mintDestination = address(1); // TODO
-        address initialOwner = 0x423420Ae467df6e90291fd0252c0A8a637C1e03f; // TODO
+        uint256 initialMint = 115_000_000e6;
+        address mintDestination = 0x30d3bbAE8623d0e9C0db5c27B82dCDA39De40997;
+        address initialOwner = 0x0C1fDfd6a1331a875EA013F3897fc8a76ada5DfC;
 
         // Deployment
-        bytes32 salt = 0x423420ae467df6e90291fd0252c0a8a637c1e03f01c1f98b4f75aa1802aea7ff;
+        bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada400b1c499ec4040ff037c0ea5;
         CFG cfg = CFG(create3(salt, abi.encodePacked(type(CFG).creationCode, abi.encode(initialOwner))));
-        require(address(cfg) == 0xcCcCccC55c2C57F0FB3bdEd4635Cd41b3Bf1b2DD);
+        require(address(cfg) == 0xCCCCccCCCCce608916f3eeB1D09E1D8B8246DC4A);
 
         // Setup
         cfg.mint(mintDestination, initialMint);
