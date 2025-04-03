@@ -22,7 +22,9 @@ forge test
 
 ## Audit reports
 
-TODO
+| Auditor                                              | Date            | Engagement                 | Report                                                                                                                                                                      |
+| ---------------------------------------------------- | --------------- | :------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Spearbit](https://spearbit.com/)                    | March 2025       | Security review            | [`Report`](https://github.com/centrifuge/cfg-token/blob/main/audits/2025-03-Spearbit.pdf)                                                                            |
 
 ## License
 
