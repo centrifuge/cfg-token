@@ -14,7 +14,7 @@ contract CFGScript is Script, CreateXScript {
         vm.startBroadcast();
 
         // Parameters
-        address initialOwner = 0x8b83962fB9dB346a20c95D98d4E312f17f4C0d9b;
+        address initialOwner = 0x7Ed48C31f2fdC40d37407cBaBf0870B2b688368f;
 
         // Deployment
         bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada4005d46c19eec362902ac385f;
