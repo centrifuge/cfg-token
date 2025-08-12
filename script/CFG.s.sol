@@ -14,9 +14,7 @@ contract CFGScript is Script, CreateXScript {
         vm.startBroadcast();
 
         // Parameters
-        uint256 initialMint = 115_000_000e18;
-        address mintDestination = 0x30d3bbAE8623d0e9C0db5c27B82dCDA39De40997;
-        address initialOwner = 0x0C1fDfd6a1331a875EA013F3897fc8a76ada5DfC;
+        address initialOwner = 0x8b83962fB9dB346a20c95D98d4E312f17f4C0d9b;
 
         // Deployment
         bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada4005d46c19eec362902ac385f;
@@ -24,8 +22,8 @@ contract CFGScript is Script, CreateXScript {
         require(address(cfg) == 0xcccCCCcCCC33D538DBC2EE4fEab0a7A1FF4e8A94);
 
         // Setup
-        cfg.mint(mintDestination, initialMint);
         cfg.rely(initialOwner);
+        cfg.deny(msg.sender);
 
         vm.stopBroadcast();
     }
