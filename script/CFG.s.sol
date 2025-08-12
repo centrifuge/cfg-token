@@ -25,6 +25,8 @@ contract CFGScript is Script, CreateXScript {
         cfg.rely(initialOwner);
         cfg.deny(msg.sender);
 
+        require(cfg.wards(initialOwner) == 1);
+
         vm.stopBroadcast();
     }
 }
