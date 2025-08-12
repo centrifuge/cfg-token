@@ -18,14 +18,11 @@ contract CFGScript is Script, CreateXScript {
 
         // Deployment
         bytes32 salt = 0x7270b20603fbb3df0921381670fbd62b9991ada4005d46c19eec362902ac385f;
-        CFG cfg = CFG(create3(salt, abi.encodePacked(type(CFG).creationCode, abi.encode(msg.sender))));
+        CFG cfg = CFG(create3(salt, abi.encodePacked(type(CFG).creationCode, abi.encode(initialOwner))));
         require(address(cfg) == 0xcccCCCcCCC33D538DBC2EE4fEab0a7A1FF4e8A94);
 
-        // Setup
-        cfg.rely(initialOwner);
-        cfg.deny(msg.sender);
-
         require(cfg.wards(initialOwner) == 1);
+        require(cfg.wards(msg.sender) == 0);
 
         vm.stopBroadcast();
     }
